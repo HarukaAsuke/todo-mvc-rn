@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useState } from "react";
+import axios from "axios";
 import styled from "styled-components";
 import {
   Dimensions,
@@ -8,33 +9,58 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import Snackbar from "../Snackbar";
 
 const AddTodo = () => {
   const [todoTitle, changeTodoTitle] = useState("");
-  console.log(todoTitle);
+  const [created, changeCreated] = useState(false);
+  const onSubmit = async () => {
+    if (todoTitle.trim() === "") {
+      return;
+    }
+    const payload = {
+      title: todoTitle,
+      status: "todo",
+    };
+    try {
+      await axios.post("http://localhost:3000/todo", payload);
+      changeTodoTitle("");
+      changeCreated(true);
+    } catch (err) {
+      console.error(err);
+    }
+  };
   return (
-    <AddTodoPresentation todoTitle={todoTitle} onChangeText={changeTodoTitle} />
+    <AddTodoPresentation
+      created={created}
+      todoTitle={todoTitle}
+      onChangeText={changeTodoTitle}
+      onSubmit={onSubmit}
+    />
   );
 };
 
 type Props = {
+  created: boolean;
   todoTitle: string;
-  // onSubmit: () => unknown
   onChangeText: (text: string) => unknown;
+  onSubmit: () => unknown;
 };
 
 const AddTodoPresentation: React.FC<Props> = ({
+  created,
   todoTitle,
-  // onSubmit,
   onChangeText,
+  onSubmit,
 }) => {
   return (
     <Section>
+      {created && <Snackbar message={"タスクを作成しました"} />}
       <Form>
         <Header>タスク名を入力</Header>
         <Input value={todoTitle} onChangeText={onChangeText} />
         <SubmitSection>
-          <Submit>
+          <Submit onPress={onSubmit}>
             <Text>追加する</Text>
           </Submit>
         </SubmitSection>
@@ -44,13 +70,14 @@ const AddTodoPresentation: React.FC<Props> = ({
 };
 
 const Section = styled(View)`
-  margin-top: 60px;
+  margin-top: 30px;
   flex: 1;
   align-items: center;
 `;
 
 const Form = styled(View)`
   width: ${Dimensions.get("window").width - 40}px;
+  margin-top: 30px;
 `;
 
 const Header = styled(Text)`

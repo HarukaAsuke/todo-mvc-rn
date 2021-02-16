@@ -1,11 +1,32 @@
 import * as React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createStackNavigator } from "@react-navigation/stack";
 import { FontAwesome5, MaterialIcons } from "@expo/vector-icons";
 import AddTodo from "./src/app/components/AddTodo";
 import TodoList from "./src/app/components/TodoList";
 
 const Tab = createBottomTabNavigator();
+
+const AddTodoStack = createStackNavigator();
+const TodoListStack = createStackNavigator();
+
+const AddTodoStackComponent = () => {
+  return (
+    <AddTodoStack.Navigator>
+      <AddTodoStack.Screen name="タスクの追加" component={AddTodo} />
+    </AddTodoStack.Navigator>
+  );
+};
+
+const TodoListStackComponent = () => {
+  return (
+    <TodoListStack.Navigator>
+      <TodoListStack.Screen name="タスク一覧" component={TodoList} />
+    </TodoListStack.Navigator>
+  );
+};
+
 const AddTodoIcon: React.FC<{ size: number; color: string }> = ({
   size,
   color,
@@ -20,13 +41,13 @@ export default function App() {
     <NavigationContainer>
       <Tab.Navigator>
         <Tab.Screen
-          name="タスクを作成"
-          component={AddTodo}
+          name="AddTodoStack"
+          component={AddTodoStackComponent}
           options={{ tabBarIcon: AddTodoIcon }}
         />
         <Tab.Screen
-          name="タスク一覧"
-          component={TodoList}
+          name="TodoListStack"
+          component={TodoListStackComponent}
           options={{ tabBarIcon: TodoListIcon }}
         />
       </Tab.Navigator>
